@@ -29,8 +29,10 @@ export default async function handler(req, res) {
     // 전체 목록 키에 추가
     const listKey = 'responses';
     const getRes = await fetch(`${url}/get/${listKey}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+      headers: { 
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
     const getData = await getRes.json();
     const existing = getData.result ? JSON.parse(getData.result) : [];
     existing.push(entry);

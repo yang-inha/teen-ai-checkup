@@ -265,10 +265,11 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     </div>
   </div>
   <div id="admin-data-screen" style="display:none;">
-    <div class="stat-grid">
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
       <div class="stat-card"><div class="stat-num" id="adm-total">0</div><div class="stat-label">전체 참여</div></div>
       <div class="stat-card"><div class="stat-num" id="adm-middle">0</div><div class="stat-label">중학생</div></div>
       <div class="stat-card"><div class="stat-num" id="adm-high">0</div><div class="stat-label">고등학생</div></div>
+      <div class="stat-card" style="border-color:rgba(255,68,68,0.2);background:linear-gradient(135deg,rgba(255,68,68,0.08),rgba(255,107,157,0.06));"><div class="stat-num" id="adm-empty" style="color:#FF4444;">0</div><div class="stat-label">무응답 포함</div></div>
     </div>
     <div class="sec-box"><div class="sec-title">📊 유형별 분포</div><div id="type-dist"></div></div>
     <div class="sec-box"><div class="sec-title">📝 응답 로그</div><div id="response-log"></div></div>
@@ -285,7 +286,8 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
 var ADMIN_PW='1234'; // ⚠️ 배포 전 변경하세요
 var adminUnlocked=false;
 var grade='',responses={m1:[],m2:[],m3:[]},resultSnap={};
-var adminData=[];
+// 무응답 플래그 추적
+var emptyFlags={m1:true,m2:true,m3:true};
 
 var TYPES={
   TCA:{name:'AI 설계자',emoji:'🏗️',desc:'균형 잡힌 AI 활용 유형이야. 스스로 깊이 생각하면서 AI를 도구로 잘 써. 지금 이 능력 계속 키워가면 정말 강력해질 거야!'},
@@ -332,10 +334,27 @@ function goToMission(n){showScreen('m'+n);}
 async function sendMessage(mNum){
   var input=document.getElementById('input'+mNum);
   var text=input.value.trim();
-  if(!text) return;
   var chatEl=document.getElementById('chat'+mNum);
   var sendBtn=document.getElementById('send'+mNum);
   sendBtn.disabled=true;
+
+  // 무응답 처리 — 빈칸도 허용, 플래그만 달아둠
+  if(!text){
+    emptyFlags['m'+mNum]=true;
+    var emptyMsg=document.createElement('div');emptyMsg.className='msg user';emptyMsg.textContent='(응답 없음)';
+    chatEl.appendChild(emptyMsg);
+    var aiReply=document.createElement('div');aiReply.className='msg ai';
+    var nextLabel=mNum===3?"'결과 보기'":"'다음 미션으로'";
+    aiReply.textContent='괜찮아! 아래 '+nextLabel+' 버튼을 눌러봐 👇';
+    chatEl.appendChild(aiReply);
+    chatEl.scrollTop=chatEl.scrollHeight;
+    sendBtn.disabled=false;
+    document.getElementById('next'+mNum).disabled=false;
+    return;
+  }
+
+  // 응답 있음 — 플래그 해제
+  emptyFlags['m'+mNum]=false;
   var userMsg=document.createElement('div');userMsg.className='msg user';userMsg.textContent=text;
   chatEl.appendChild(userMsg);input.value='';
   responses['m'+mNum].push(text);
@@ -356,17 +375,33 @@ function scoreAR(arr){var s=0;if(arr.length>=2)s++;var all=arr.join(' ');if(/구
 async function analyzeAndShowResult(){
   showScreen('loading');
   var r1=responses.m1.join(' '),r2=responses.m2.join(' '),r3=responses.m3.join(' ');
-  var s1=scoreTV(r1),s2=scoreCF(r2),s3=scoreAR(responses.m3);
+  var isEmpty1=emptyFlags.m1,isEmpty2=emptyFlags.m2,isEmpty3=emptyFlags.m3;
+  // 무응답이면 자동으로 V/F/R
+  var s1=isEmpty1?0:scoreTV(r1),s2=isEmpty2?0:scoreCF(r2),s3=isEmpty3?0:scoreAR(responses.m3);
   var tv=s1>=2?'T':'V',cf=s2>=2?'C':'F',ar=s3>=2?'A':'R';
   var comment='미션을 완료했어! 앞으로 AI랑 더 많이 대화해봐.';
-  if((s1===1)||(s2===1)||(s3===1)){
+  if(!isEmpty1&&!isEmpty2&&!isEmpty3&&((s1===1)||(s2===1)||(s3===1))){
     var prompt='다음은 10대 학생의 AI 활용 체크업 응답이야.\n미션1: "'+(r1||'무응답')+'"\n미션2: "'+(r2||'무응답')+'"\n미션3: "'+(r3||'무응답')+'"\n1차 판별: TV='+tv+', CF='+cf+', AR='+ar+'\n애매한 축만 재판별. 반드시 JSON만 출력:\n{"tv":"T또는V","cf":"C또는F","ar":"A또는R","comment":"학생에게 친근하고 활기찬 피드백 2문장"}';
     try{var raw=await callAPI('',prompt);var p=JSON.parse(raw.replace(/```json|```/g,'').trim());if(['T','V'].includes(p.tv))tv=p.tv;if(['C','F'].includes(p.cf))cf=p.cf;if(['A','R'].includes(p.ar))ar=p.ar;if(p.comment)comment=p.comment;}catch(e){}
   }
   var typeCode=tv+cf+ar;if(!TYPES[typeCode])typeCode='VFR';
   var typeInfo=TYPES[typeCode];var prefix=grade==='M'?'M':'H';var fullCode=prefix+'-'+typeCode;
   resultSnap={fullCode:fullCode,name:typeInfo.name,desc:typeInfo.desc};
-  adminData.push({time:new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}),grade:grade==='M'?'중학생':'고등학생',fullCode:fullCode,typeName:typeInfo.name,r1:r1||'무응답',r2:r2||'무응답',r3:r3||'무응답'});
+
+  // Upstash에 저장 (무응답 플래그 포함)
+  try{
+    await fetch('/api/save',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        grade:grade==='M'?'중학생':'고등학생',
+        fullCode:fullCode,typeName:typeInfo.name,
+        r1:r1||'',r2:r2||'',r3:r3||'',
+        isEmpty1:isEmpty1,isEmpty2:isEmpty2,isEmpty3:isEmpty3
+      })
+    });
+  }catch(e){console.error('Save failed',e);}
+
   document.getElementById('result-grade-label').textContent=(grade==='M'?'🎒 중학생':'🎓 고등학생')+' 유형';
   document.getElementById('result-emoji').textContent=typeInfo.emoji;
   var chars=fullCode.replace('M-','').replace('H-','').split('');
@@ -382,18 +417,59 @@ async function analyzeAndShowResult(){
   showScreen('result');
 }
 
-function renderAdmin(){
+async function renderAdmin(){
+  document.getElementById('adm-total').textContent='...';
+  document.getElementById('adm-middle').textContent='...';
+  document.getElementById('adm-high').textContent='...';
+  document.getElementById('type-dist').innerHTML='<div class="empty-state">불러오는 중... 🔄</div>';
+  document.getElementById('response-log').innerHTML='';
+
+  var adminData=[];
+  try{
+    var res=await fetch('/api/responses');
+    var data=await res.json();
+    adminData=data.responses||[];
+  }catch(e){
+    document.getElementById('type-dist').innerHTML='<div class="empty-state">데이터 로드 실패 😢</div>';
+    return;
+  }
+
   var total=adminData.length,mid=adminData.filter(function(d){return d.grade==='중학생';}).length;
-  document.getElementById('adm-total').textContent=total;document.getElementById('adm-middle').textContent=mid;document.getElementById('adm-high').textContent=total-mid;
+  document.getElementById('adm-total').textContent=total;
+  document.getElementById('adm-middle').textContent=mid;
+  document.getElementById('adm-high').textContent=total-mid;
+
+  // 무응답 건수 표시
+  var emptyCount=adminData.filter(function(d){return d.hasEmpty;}).length;
+  var emptyEl=document.getElementById('adm-empty');
+  if(emptyEl) emptyEl.textContent=emptyCount;
+
   var dist={};adminData.forEach(function(d){dist[d.fullCode]=(dist[d.fullCode]||0)+1;});
   var distEl=document.getElementById('type-dist');
   if(!total){distEl.innerHTML='<div class="empty-state">아직 데이터가 없어요 🌱</div>';}
   else{var maxV=Math.max.apply(null,Object.values(dist));var html='';Object.keys(dist).sort().forEach(function(k){var cnt=dist[k],pct=Math.round((cnt/maxV)*100),tc=k.replace('M-','').replace('H-',''),tn=(TYPES[tc]&&TYPES[tc].name)||'',em=(TYPES[tc]&&TYPES[tc].emoji)||'';html+='<div class="type-row"><div class="tr-code">'+k+'</div><div class="tr-name">'+em+' '+tn+'</div><div class="tr-bar-wrap"><div class="tr-bar" style="width:'+pct+'%;"></div></div><div class="tr-cnt">'+cnt+'명</div></div>';});distEl.innerHTML=html;}
+
   var logEl=document.getElementById('response-log');
   if(!adminData.length){logEl.innerHTML='<div class="empty-state">아직 응답 데이터가 없어요 🌱</div>';}
-  else{var lh='';adminData.slice().reverse().forEach(function(d){lh+='<div class="log-item"><div class="log-meta">'+d.time+' · '+d.grade+'</div><div class="log-type">'+d.fullCode+' '+d.typeName+'</div><div class="log-resp"><b>미션1:</b> '+d.r1.substring(0,80)+(d.r1.length>80?'...':'')+'<br><b>미션2:</b> '+d.r2.substring(0,80)+(d.r2.length>80?'...':'')+'<br><b>미션3:</b> '+d.r3.substring(0,80)+(d.r3.length>80?'...':'')+'</div></div>';});logEl.innerHTML=lh;}
+  else{
+    var lh='';
+    adminData.slice().reverse().forEach(function(d){
+      var f1=d.flag1==='EMPTY'?'<span style="color:#FF4444;font-size:10px;">⚠️무응답</span>':'';
+      var f2=d.flag2==='EMPTY'?'<span style="color:#FF4444;font-size:10px;">⚠️무응답</span>':'';
+      var f3=d.flag3==='EMPTY'?'<span style="color:#FF4444;font-size:10px;">⚠️무응답</span>':'';
+      lh+='<div class="log-item"><div class="log-meta">'+d.time+' · '+d.grade+(d.hasEmpty?' · <span style="color:#FF4444;">무응답포함</span>':'')+'</div><div class="log-type">'+d.fullCode+' '+d.typeName+'</div><div class="log-resp"><b>미션1:</b> '+f1+(d.r1?d.r1.substring(0,80)+(d.r1.length>80?'...':''):'(없음)')+'<br><b>미션2:</b> '+f2+(d.r2?d.r2.substring(0,80)+(d.r2.length>80?'...':''):'(없음)')+'<br><b>미션3:</b> '+f3+(d.r3?d.r3.substring(0,80)+(d.r3.length>80?'...':''):'(없음)')+'</div></div>';
+    });
+    logEl.innerHTML=lh;
+  }
 }
-function clearAdminData(){if(confirm('데이터를 초기화할까요?')){adminData=[];renderAdmin();}}
+async function clearAdminData(){
+  if(confirm('서버의 모든 데이터를 초기화할까요?')){
+    try{
+      await fetch('/api/clear',{method:'POST'});
+      renderAdmin();
+    }catch(e){alert('초기화 실패');}
+  }
+}
 function copyResult(){
   var text='나의 AI 유형: '+resultSnap.fullCode+' '+resultSnap.name+'\n'+resultSnap.desc+'\n\n#AI활용체크업 #10대AI유형';
   var fb=document.getElementById('copy-feedback');
@@ -402,6 +478,7 @@ function copyResult(){
 function fallbackCopy(text,fb){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');fb.textContent='복사됐어! 친구들한테 공유해봐 😄';}catch(e){fb.textContent='직접 길게 눌러서 복사해봐!';}setTimeout(function(){fb.textContent='';},3000);document.body.removeChild(ta);}
 function restart(){
   grade='';responses={m1:[],m2:[],m3:[]};resultSnap={};
+  emptyFlags={m1:true,m2:true,m3:true};
   var msgs=['안녕! 방금 읽은 글, 네 말로 설명해줄래? 😊','속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔','위 답변이 마음에 안 들면 나한테 다시 요청해봐. 더 좋은 답을 줄 수 있어! 💬'];
   [1,2,3].forEach(function(n){document.getElementById('chat'+n).innerHTML='<div class="msg ai">'+msgs[n-1]+'</div>';document.getElementById('next'+n).disabled=true;});
   document.getElementById('btn-M').classList.remove('selected');document.getElementById('btn-H').classList.remove('selected');

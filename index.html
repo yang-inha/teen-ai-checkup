@@ -157,10 +157,35 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="hero-title">나는 어떤<br>AI 유형일까? ✨</div>
     <p class="hero-sub" style="margin-top:0.6rem;">3가지 미션 · 약 10분<br>나만의 AI 활용 유형을 찾아봐!</p>
   </div>
+
+  <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:8px;letter-spacing:0.5px;">📚 학교급 선택</div>
   <div class="grade-select">
-    <button class="grade-btn" onclick="selectGrade('M')" id="btn-M"><div class="gi">📚</div><div class="gl">중학생</div><div class="gd">중1 ~ 중3</div></button>
-    <button class="grade-btn" onclick="selectGrade('H')" id="btn-H"><div class="gi">🎓</div><div class="gl">고등학생</div><div class="gd">고1 ~ 고3</div></button>
+    <button class="grade-btn" onclick="selectGrade('M')" id="btn-M"><div class="gi">📚</div><div class="gl">중학교</div><div class="gd">중1 ~ 중3</div></button>
+    <button class="grade-btn" onclick="selectGrade('H')" id="btn-H"><div class="gi">🎓</div><div class="gl">고등학교</div><div class="gd">고1 ~ 고3</div></button>
   </div>
+
+  <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:8px;letter-spacing:0.5px;">🎒 학년 선택</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.2rem;">
+    <button class="grade-btn" onclick="selectYear(1)" id="btn-Y1"><div class="gl">1학년</div></button>
+    <button class="grade-btn" onclick="selectYear(2)" id="btn-Y2"><div class="gl">2학년</div></button>
+    <button class="grade-btn" onclick="selectYear(3)" id="btn-Y3"><div class="gl">3학년</div></button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:1.2rem;">
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:6px;letter-spacing:0.5px;">🏫 학교명</div>
+      <input id="school-input" type="text" placeholder="예: 제주중학교"
+        style="width:100%;padding:12px 14px;border:2px solid rgba(168,85,247,0.2);border-radius:14px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;background:#fff;color:#1a1a2e;transition:border-color 0.2s;"
+        oninput="checkStartBtn()" onfocus="this.style.borderColor='var(--c2)'" onblur="this.style.borderColor='rgba(168,85,247,0.2)'">
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:6px;letter-spacing:0.5px;">🚪 반</div>
+      <input id="class-input" type="number" placeholder="3" min="1" max="30"
+        style="width:100%;padding:12px 14px;border:2px solid rgba(168,85,247,0.2);border-radius:14px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;background:#fff;color:#1a1a2e;transition:border-color 0.2s;"
+        oninput="checkStartBtn()" onfocus="this.style.borderColor='var(--c2)'" onblur="this.style.borderColor='rgba(168,85,247,0.2)'">
+    </div>
+  </div>
+
   <button class="start-btn" id="start-btn" disabled onclick="startMission()">시작하기 🚀</button>
 </div>
 
@@ -265,11 +290,17 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     </div>
   </div>
   <div id="admin-data-screen" style="display:none;">
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr 1fr;">
+    <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
       <div class="stat-card"><div class="stat-num" id="adm-total">0</div><div class="stat-label">전체 참여</div></div>
-      <div class="stat-card"><div class="stat-num" id="adm-middle">0</div><div class="stat-label">중학생</div></div>
-      <div class="stat-card"><div class="stat-num" id="adm-high">0</div><div class="stat-label">고등학생</div></div>
+      <div class="stat-card"><div class="stat-num" id="adm-middle">0</div><div class="stat-label">중학교</div></div>
+      <div class="stat-card"><div class="stat-num" id="adm-high">0</div><div class="stat-label">고등학교</div></div>
+      <div class="stat-card" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(59,130,246,0.08));border-color:rgba(16,185,129,0.2);"><div class="stat-num" id="adm-schools" style="color:var(--c4);">0</div><div class="stat-label">참여 학교</div></div>
       <div class="stat-card" style="border-color:rgba(255,68,68,0.2);background:linear-gradient(135deg,rgba(255,68,68,0.08),rgba(255,107,157,0.06));"><div class="stat-num" id="adm-empty" style="color:#FF4444;">0</div><div class="stat-label">무응답 포함</div></div>
+    </div>
+    <!-- 학교별 현황 -->
+    <div class="sec-box" id="school-dist-box">
+      <div class="sec-title">🏫 학교별 참여 현황</div>
+      <div id="school-dist"></div>
     </div>
     <div class="sec-box"><div class="sec-title">📊 유형별 분포</div><div id="type-dist"></div></div>
     <div class="sec-box"><div class="sec-title">📝 응답 로그</div><div id="response-log"></div></div>
@@ -288,6 +319,8 @@ var adminUnlocked=false;
 var grade='',responses={m1:[],m2:[],m3:[]},resultSnap={};
 // 무응답 플래그 추적
 var emptyFlags={m1:true,m2:true,m3:true};
+// 학교 정보
+var schoolInfo={school:'',year:0,classNum:''};
 
 var TYPES={
   TCA:{name:'AI 설계자',emoji:'🏗️',desc:'균형 잡힌 AI 활용 유형이야. 스스로 깊이 생각하면서 AI를 도구로 잘 써. 지금 이 능력 계속 키워가면 정말 강력해질 거야!'},
@@ -326,7 +359,14 @@ function switchTab(t){
   document.getElementById('tab-admin-content').style.display=t==='admin'?'block':'none';
   if(t==='admin'&&adminUnlocked) renderAdmin();
 }
-function selectGrade(g){grade=g;document.getElementById('btn-M').classList.toggle('selected',g==='M');document.getElementById('btn-H').classList.toggle('selected',g==='H');document.getElementById('start-btn').disabled=false;}
+function selectGrade(g){grade=g;document.getElementById('btn-M').classList.toggle('selected',g==='M');document.getElementById('btn-H').classList.toggle('selected',g==='H');checkStartBtn();}
+function selectYear(y){schoolInfo.year=y;[1,2,3].forEach(function(n){document.getElementById('btn-Y'+n).classList.toggle('selected',n===y);});checkStartBtn();}
+function checkStartBtn(){
+  var school=document.getElementById('school-input').value.trim();
+  var cls=document.getElementById('class-input').value.trim();
+  schoolInfo.school=school;schoolInfo.classNum=cls;
+  document.getElementById('start-btn').disabled=!(grade&&schoolInfo.year&&school&&cls);
+}
 function showScreen(id){document.querySelectorAll('#tab-student-content .screen').forEach(function(s){s.classList.remove('active');});document.getElementById('screen-'+id).classList.add('active');}
 function startMission(){showScreen('m1');}
 function goToMission(n){showScreen('m'+n);}
@@ -394,7 +434,10 @@ async function analyzeAndShowResult(){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        grade:grade==='M'?'중학생':'고등학생',
+        grade:grade==='M'?'중학교':'고등학교',
+        year:schoolInfo.year,
+        school:schoolInfo.school,
+        classNum:schoolInfo.classNum,
         fullCode:fullCode,typeName:typeInfo.name,
         r1:r1||'',r2:r2||'',r3:r3||'',
         isEmpty1:isEmpty1,isEmpty2:isEmpty2,isEmpty3:isEmpty3
@@ -434,10 +477,34 @@ async function renderAdmin(){
     return;
   }
 
-  var total=adminData.length,mid=adminData.filter(function(d){return d.grade==='중학생';}).length;
+  var total=adminData.length;
+  var mid=adminData.filter(function(d){return d.grade==='중학교';}).length;
+  var schools=[...new Set(adminData.map(function(d){return d.school||'미입력';}))];
   document.getElementById('adm-total').textContent=total;
   document.getElementById('adm-middle').textContent=mid;
   document.getElementById('adm-high').textContent=total-mid;
+  document.getElementById('adm-schools').textContent=schools.length;
+
+  // 학교별 현황
+  var schoolDistEl=document.getElementById('school-dist');
+  if(!total){schoolDistEl.innerHTML='<div class="empty-state">아직 데이터가 없어요 🌱</div>';}
+  else{
+    var schoolGroups={};
+    adminData.forEach(function(d){
+      var key=(d.school||'미입력')+' '+d.grade+(d.year?d.year+'학년':'')+(d.classNum?d.classNum+'반':'');
+      if(!schoolGroups[key]) schoolGroups[key]={count:0,types:{}};
+      schoolGroups[key].count++;
+      schoolGroups[key].types[d.fullCode]=(schoolGroups[key].types[d.fullCode]||0)+1;
+    });
+    var sh='';
+    Object.keys(schoolGroups).sort().forEach(function(k){
+      var g=schoolGroups[k];
+      var typeStr=Object.keys(g.types).sort().map(function(t){return t+':'+g.types[t]+'명';}).join(', ');
+      sh+='<div class="type-row"><div class="tr-code" style="min-width:auto;flex:2;">'+k+'</div><div class="tr-cnt">'+g.count+'명</div></div>';
+      sh+='<div style="font-size:11px;color:#aaa;padding:2px 0 8px 0;border-bottom:1px solid rgba(168,85,247,0.07);">'+typeStr+'</div>';
+    });
+    schoolDistEl.innerHTML=sh;
+  }
 
   // 무응답 건수 표시
   var emptyCount=adminData.filter(function(d){return d.hasEmpty;}).length;
@@ -479,6 +546,10 @@ function fallbackCopy(text,fb){var ta=document.createElement('textarea');ta.valu
 function restart(){
   grade='';responses={m1:[],m2:[],m3:[]};resultSnap={};
   emptyFlags={m1:true,m2:true,m3:true};
+  schoolInfo={school:'',year:0,classNum:''};
+  document.getElementById('school-input').value='';
+  document.getElementById('class-input').value='';
+  [1,2,3].forEach(function(n){document.getElementById('btn-Y'+n).classList.remove('selected');});
   var msgs=['안녕! 방금 읽은 글, 네 말로 설명해줄래? 😊','속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔','위 답변이 마음에 안 들면 나한테 다시 요청해봐. 더 좋은 답을 줄 수 있어! 💬'];
   [1,2,3].forEach(function(n){document.getElementById('chat'+n).innerHTML='<div class="msg ai">'+msgs[n-1]+'</div>';document.getElementById('next'+n).disabled=true;});
   document.getElementById('btn-M').classList.remove('selected');document.getElementById('btn-H').classList.remove('selected');

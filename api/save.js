@@ -3,13 +3,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { grade, fullCode, typeName, r1, r2, r3, isEmpty1, isEmpty2, isEmpty3 } = req.body;
+  const { grade, year, school, classNum, fullCode, typeName, r1, r2, r3, isEmpty1, isEmpty2, isEmpty3 } = req.body;
 
   const entry = {
     id: Date.now().toString(),
     time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
     timestamp: Date.now(),
     grade,
+    year: year||'',
+    school: school||'',
+    classNum: classNum||'',
     fullCode,
     typeName,
     r1: r1 || '',
@@ -29,10 +32,8 @@ export default async function handler(req, res) {
     // 전체 목록 키에 추가
     const listKey = 'responses';
     const getRes = await fetch(`${url}/get/${listKey}`, {
-      headers: { 
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  }
+      headers: { Authorization: `Bearer ${token}` }
+    });
     const getData = await getRes.json();
     const existing = getData.result ? JSON.parse(getData.result) : [];
     existing.push(entry);

@@ -15,13 +15,21 @@ export default async function handler(req, res) {
     });
     
     if (!getRes.ok) {
-      const errText = await getRes.text();
-      console.error('Upstash error:', getRes.status, errText);
       return res.status(200).json({ success: true, responses: [] });
     }
     
     const getData = await getRes.json();
-    const responses = getData.result ? JSON.parse(getData.result) : [];
+    let responses = [];
+    
+    if (getData.result) {
+      // 중첩 저장된 경우 처리
+      let parsed = JSON.parse(getData.result);
+      if (parsed && parsed.value) {
+        parsed = JSON.parse(parsed.value);
+      }
+      responses = Array.isArray(parsed) ? parsed : [];
+    }
+
     res.status(200).json({ success: true, responses });
   } catch (error) {
     console.error('Fetch error:', error);

@@ -38,11 +38,14 @@ export default async function handler(req, res) {
     const existing = getData.result ? JSON.parse(getData.result) : [];
     existing.push(entry);
 
-    await fetch(`${url}/set/${listKey}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value: JSON.stringify(existing) })
-    });
+await fetch(`${url}/set/${listKey}`, {
+  method: 'POST',
+  headers: { 
+    Authorization: `Bearer ${token}`, 
+    'Content-Type': 'application/json' 
+  },
+  body: JSON.stringify(existing)
+});
 
     res.status(200).json({ success: true, id: entry.id });
   } catch (error) {

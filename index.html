@@ -97,6 +97,16 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
 .retry-btn{padding:14px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;font-size:13px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(168,85,247,0.25);}
 .retry-btn:hover{transform:translateY(-1px);}
 .copy-fb{text-align:center;font-size:12px;font-weight:800;color:var(--c2);margin-top:8px;height:20px;}
+.share-card{border-radius:20px;padding:24px 20px;margin:1.2rem 0;display:flex;flex-direction:column;align-items:center;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+.share-card-img-wrap{width:100%;height:170px;display:flex;align-items:flex-end;justify-content:center;}
+.share-card-img-wrap img{max-height:100%;max-width:100%;object-fit:contain;}
+.share-card-code{margin-top:14px;font-size:12px;letter-spacing:0.12em;opacity:0.75;font-weight:900;}
+.share-card-name{margin-top:6px;font-size:19px;font-weight:900;}
+.share-card-phrase{margin-top:8px;padding:0 4px;font-size:14.5px;line-height:1.35;opacity:0.92;font-weight:700;}
+.share-card-watermark{margin-top:16px;font-size:11px;opacity:0.55;letter-spacing:0.02em;font-weight:700;}
+.card-share-row{margin-top:0.9rem;}
+.card-share-btn{width:100%;padding:14px;border-radius:16px;border:2.5px solid var(--c2);background:transparent;font-size:13px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--c2);transition:all 0.2s;}
+.card-share-btn:hover{background:rgba(168,85,247,0.08);}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1.3rem;}
 .stat-card{border-radius:16px;padding:1.1rem;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
 .stat-card:nth-child(1){background:linear-gradient(135deg,rgba(255,107,157,0.1),rgba(255,142,83,0.08));border:1.5px solid rgba(255,107,157,0.2);}
@@ -269,6 +279,18 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="comment-label">💡 AI 분석 코멘트</div>
     <div class="comment-text" id="ai-comment"></div>
   </div>
+
+  <div class="share-card" id="share-card">
+    <div class="share-card-img-wrap"><img id="share-card-img" src="" alt=""></div>
+    <div class="share-card-code" id="share-card-code"></div>
+    <div class="share-card-name" id="share-card-name"></div>
+    <div class="share-card-phrase" id="share-card-phrase"></div>
+    <div class="share-card-watermark">jejuailab.com</div>
+  </div>
+  <div class="card-share-row">
+    <button class="card-share-btn" onclick="downloadShareCard()">🖼️ 공유 카드 이미지로 저장</button>
+  </div>
+
   <div class="share-row">
     <button class="share-btn" onclick="copyResult()">📋 결과 복사하기</button>
     <button class="retry-btn" onclick="restart()">🔄 다시 하기</button>
@@ -313,6 +335,7 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 var ADMIN_PW='5815'; // ⚠️ 배포 전 변경하세요
 var adminUnlocked=false;
@@ -323,14 +346,14 @@ var emptyFlags={m1:true,m2:true,m3:true};
 var schoolInfo={school:'',year:0,classNum:''};
 
 var TYPES={
-  TCA:{name:'AI 설계자',emoji:'🏗️',desc:'균형 잡힌 AI 활용 유형이야. 스스로 깊이 생각하면서 AI를 도구로 잘 써. 지금 이 능력 계속 키워가면 정말 강력해질 거야!'},
-  TCR:{name:'AI 분석가',emoji:'🔍',desc:'깊이 읽고 맥락을 잘 파악해. 다만 AI한테 먼저 말 거는 게 아직 어색한 편이야. 질문하는 연습을 조금만 더 하면 레벨업!'},
-  TFA:{name:'AI 탐험가',emoji:'🧭',desc:'호기심 넘치고 질문도 많아! 다만 여러 정보를 연결하는 연습이 더 필요해. 다양한 글을 읽으면서 맥락 감각을 키워봐.'},
-  TFR:{name:'AI 관찰자',emoji:'🌿',desc:'읽는 건 좋아하는데 AI랑 대화가 아직 어색해. 숨어있는 잠재력이 커! 일단 AI한테 말 걸어보는 것부터 시작해봐.'},
-  VCA:{name:'AI 크리에이터',emoji:'🎬',desc:'영상 감각이 뛰어나고 맥락도 잘 읽어. 텍스트로 표현하는 연습만 더 하면 창의적인 AI 활용 고수가 될 거야!'},
-  VCR:{name:'AI 감상자',emoji:'🎧',desc:'분위기 읽는 눈은 있는데 아직 AI를 구경하는 단계야. 한 번만 말을 걸어봐 — 생각보다 재미있을 거야!'},
-  VFA:{name:'AI 도전자',emoji:'⚡',desc:'일단 부딪혀보는 스타일이야! 텍스트 읽기랑 맥락 연결 연습을 더 하면 폭발적으로 성장할 수 있어. 가능성 최고!'},
-  VFR:{name:'AI 새싹',emoji:'🌱',desc:'AI가 아직 낯설지? 그게 완전 자연스러워. 모든 AI 고수도 여기서 시작했어. 가장 성장 여지가 큰 유형이야!'}
+  TCA:{name:'AI 설계자',emoji:'🏗️',desc:'균형 잡힌 AI 활용 유형이야. 스스로 깊이 생각하면서 AI를 도구로 잘 써. 지금 이 능력 계속 키워가면 정말 강력해질 거야!',phrase:'질문하기 전에 답 3개 미리 뽑아둠',bg:'#1E3A8A',fg:'#EAF1FF'},
+  TCR:{name:'AI 분석가',emoji:'🔍',desc:'깊이 읽고 맥락을 잘 파악해. 다만 AI한테 먼저 말 거는 게 아직 어색한 편이야. 질문하는 연습을 조금만 더 하면 레벨업!',phrase:'AI가 헛소리해도 내가 먼저 알아챔',bg:'#4B5563',fg:'#F1F2F4'},
+  TFA:{name:'AI 탐험가',emoji:'🧭',desc:'호기심 넘치고 질문도 많아! 다만 여러 정보를 연결하는 연습이 더 필요해. 다양한 글을 읽으면서 맥락 감각을 키워봐.',phrase:'생각은 짧게, 실행은 바로',bg:'#F97316',fg:'#4A1B0C'},
+  TFR:{name:'AI 관찰자',emoji:'🌿',desc:'읽는 건 좋아하는데 AI랑 대화가 아직 어색해. 숨어있는 잠재력이 커! 일단 AI한테 말 걸어보는 것부터 시작해봐.',phrase:'댓글만 3일째 읽는 중',bg:'#65A374',fg:'#173404'},
+  VCA:{name:'AI 크리에이터',emoji:'🎬',desc:'영상 감각이 뛰어나고 맥락도 잘 읽어. 텍스트로 표현하는 연습만 더 하면 창의적인 AI 활용 고수가 될 거야!',phrase:'취미로 시작했는데 실력은 이미 프로',bg:'#8B5CF6',fg:'#EEEDFE'},
+  VCR:{name:'AI 감상자',emoji:'🎧',desc:'분위기 읽는 눈은 있는데 아직 AI를 구경하는 단계야. 한 번만 말을 걸어봐 — 생각보다 재미있을 거야!',phrase:'내가 만든 것도 아닌데 감동함',bg:'#C4B5FD',fg:'#3C3489'},
+  VFA:{name:'AI 도전자',emoji:'⚡',desc:'일단 부딪혀보는 스타일이야! 텍스트 읽기랑 맥락 연결 연습을 더 하면 폭발적으로 성장할 수 있어. 가능성 최고!',phrase:'일단 눌러보고 우주로 감',bg:'#EC4899',fg:'#4B1528'},
+  VFR:{name:'AI 새싹',emoji:'🌱',desc:'AI가 아직 낯설지? 그게 완전 자연스러워. 모든 AI 고수도 여기서 시작했어. 가장 성장 여지가 큰 유형이야!',phrase:'모르는 척 다 아는 척, 둘 다 함',bg:'#FDE047',fg:'#412402'}
 };
 var charColors=['c1','c2','c3'];
 
@@ -457,7 +480,30 @@ async function analyzeAndShowResult(){
   document.getElementById('axis-cf-name').textContent={C:'맥락형',F:'단편형'}[cf];
   document.getElementById('axis-ar-name').textContent={A:'주도형',R:'수용형'}[ar];
   document.getElementById('ai-comment').textContent=comment;
+
+  var cardEl=document.getElementById('share-card');
+  cardEl.style.backgroundColor=typeInfo.bg;
+  cardEl.style.color=typeInfo.fg;
+  document.getElementById('share-card-img').src='images/ai-types/'+typeCode.toLowerCase()+'.png';
+  document.getElementById('share-card-img').alt=typeInfo.name;
+  document.getElementById('share-card-code').textContent=typeCode;
+  document.getElementById('share-card-name').textContent=typeInfo.name;
+  document.getElementById('share-card-phrase').textContent=typeInfo.phrase;
+
   showScreen('result');
+}
+
+function downloadShareCard(){
+  var card=document.getElementById('share-card');
+  if(typeof html2canvas==='undefined'){alert('이미지 저장 기능을 불러오지 못했어. 화면을 캡처해서 저장해줘!');return;}
+  html2canvas(card,{backgroundColor:null,scale:2}).then(function(canvas){
+    var link=document.createElement('a');
+    link.href=canvas.toDataURL('image/png');
+    link.download=(resultSnap.fullCode||'ai유형')+'-카드.png';
+    link.click();
+  }).catch(function(){
+    alert('이미지 저장에 실패했어. 화면을 캡처해서 저장해줘!');
+  });
 }
 
 async function renderAdmin(){

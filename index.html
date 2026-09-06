@@ -293,9 +293,9 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="type-desc" id="result-desc"></div>
   </div>
   <div class="axis-cards">
-    <div class="axis-card tv"><div class="ax-label">텍스트 친숙도</div><div class="ax-val" id="axis-tv"></div><div class="ax-name" id="axis-tv-name"></div></div>
-    <div class="axis-card cf"><div class="ax-label">맥락 파악력</div><div class="ax-val" id="axis-cf"></div><div class="ax-name" id="axis-cf-name"></div></div>
-    <div class="axis-card ar"><div class="ax-label">AI 상호작용</div><div class="ax-val" id="axis-ar"></div><div class="ax-name" id="axis-ar-name"></div></div>
+    <div class="axis-card tv"><div class="ax-label">표현 스타일</div><div class="ax-val" id="axis-tv"></div><div class="ax-name" id="axis-tv-name"></div></div>
+    <div class="axis-card cf"><div class="ax-label">사고 스타일</div><div class="ax-val" id="axis-cf"></div><div class="ax-name" id="axis-cf-name"></div></div>
+    <div class="axis-card ar"><div class="ax-label">소통 스타일</div><div class="ax-val" id="axis-ar"></div><div class="ax-name" id="axis-ar-name"></div></div>
   </div>
   <div class="comment-box">
     <div class="comment-label">💡 AI 분석 코멘트</div>
@@ -370,14 +370,14 @@ var emptyFlags={m1:true,m2:true,m3:true};
 var schoolInfo={school:'',year:0,classNum:''};
 
 var TYPES={
-  TCA:{name:'AI 설계자',emoji:'🏗️',desc:'균형 잡힌 AI 활용 유형이야. 스스로 깊이 생각하면서 AI를 도구로 잘 써. 지금 이 능력 계속 키워가면 정말 강력해질 거야!',phrase:'질문하기 전에 답 3개 미리 뽑아둠',bg:'#1E3A8A',fg:'#EAF1FF'},
-  TCR:{name:'AI 분석가',emoji:'🔍',desc:'깊이 읽고 맥락을 잘 파악해. 다만 AI한테 먼저 말 거는 게 아직 어색한 편이야. 질문하는 연습을 조금만 더 하면 레벨업!',phrase:'AI가 헛소리해도 내가 먼저 알아챔',bg:'#4B5563',fg:'#F1F2F4'},
-  TFA:{name:'AI 탐험가',emoji:'🧭',desc:'호기심 넘치고 질문도 많아! 다만 여러 정보를 연결하는 연습이 더 필요해. 다양한 글을 읽으면서 맥락 감각을 키워봐.',phrase:'생각은 짧게, 실행은 바로',bg:'#F97316',fg:'#4A1B0C'},
-  TFR:{name:'AI 관찰자',emoji:'🌿',desc:'읽는 건 좋아하는데 AI랑 대화가 아직 어색해. 숨어있는 잠재력이 커! 일단 AI한테 말 걸어보는 것부터 시작해봐.',phrase:'댓글만 3일째 읽는 중',bg:'#65A374',fg:'#173404'},
-  VCA:{name:'AI 크리에이터',emoji:'🎬',desc:'영상 감각이 뛰어나고 맥락도 잘 읽어. 텍스트로 표현하는 연습만 더 하면 창의적인 AI 활용 고수가 될 거야!',phrase:'취미로 시작했는데 실력은 이미 프로',bg:'#8B5CF6',fg:'#EEEDFE'},
-  VCR:{name:'AI 감상자',emoji:'🎧',desc:'분위기 읽는 눈은 있는데 아직 AI를 구경하는 단계야. 한 번만 말을 걸어봐 — 생각보다 재미있을 거야!',phrase:'내가 만든 것도 아닌데 감동함',bg:'#C4B5FD',fg:'#3C3489'},
-  VFA:{name:'AI 도전자',emoji:'⚡',desc:'일단 부딪혀보는 스타일이야! 텍스트 읽기랑 맥락 연결 연습을 더 하면 폭발적으로 성장할 수 있어. 가능성 최고!',phrase:'일단 눌러보고 우주로 감',bg:'#EC4899',fg:'#4B1528'},
-  VFR:{name:'AI 새싹',emoji:'🌱',desc:'AI가 아직 낯설지? 그게 완전 자연스러워. 모든 AI 고수도 여기서 시작했어. 가장 성장 여지가 큰 유형이야!',phrase:'모르는 척 다 아는 척, 둘 다 함',bg:'#FDE047',fg:'#412402'}
+  TCA:{name:'AI 설계자',emoji:'🏗️',desc:'계획 세우고 움직이는 타입이야. AI한테 뭘 물어볼지 미리 정리해두는 편이라, 대화가 늘 목적이 분명해.',phrase:'질문하기 전에 답 3개 미리 뽑아둠',bg:'#1E3A8A',fg:'#EAF1FF'},
+  TCR:{name:'AI 분석가',emoji:'🔍',desc:'AI 말을 곧이곧대로 안 믿고 한 번 더 뜯어보는 타입이야. 헛소리는 절대 못 지나쳐.',phrase:'AI가 헛소리해도 내가 먼저 알아챔',bg:'#4B5563',fg:'#F1F2F4'},
+  TFA:{name:'AI 탐험가',emoji:'🧭',desc:'일단 물어보고 보는 스타일이야. 정답보다 새로운 걸 발견하는 재미로 AI를 써.',phrase:'생각은 짧게, 실행은 바로',bg:'#F97316',fg:'#4A1B0C'},
+  TFR:{name:'AI 관찰자',emoji:'🌿',desc:'말 걸기 전에 분위기부터 읽는 타입이야. 조용히 지켜보다가 결정적일 때 딱 필요한 걸 물어봐.',phrase:'댓글만 3일째 읽는 중',bg:'#65A374',fg:'#173404'},
+  VCA:{name:'AI 크리에이터',emoji:'🎬',desc:'만드는 게 제일 재밌는 타입이야. AI를 도구 삼아 뭔가 뚝딱 만들어내는 데 진심이지.',phrase:'취미로 시작했는데 실력은 이미 프로',bg:'#8B5CF6',fg:'#EEEDFE'},
+  VCR:{name:'AI 감상자',emoji:'🎧',desc:'결과물 감상하는 게 취향인 타입이야. 잘 만든 걸 보면서 영감 얻는 데 진짜 진심이야.',phrase:'내가 만든 것도 아닌데 감동함',bg:'#C4B5FD',fg:'#3C3489'},
+  VFA:{name:'AI 도전자',emoji:'⚡',desc:'일단 눌러보고 보는 타입이야. 이것저것 시도해보면서 감으로 익히는 스타일.',phrase:'일단 눌러보고 우주로 감',bg:'#EC4899',fg:'#4B1528'},
+  VFR:{name:'AI 새싹',emoji:'🌱',desc:'이제 막 AI랑 친해지는 중인 타입이야. 낯설어도 재밌어서 계속 눌러보게 되지.',phrase:'모르는 척 다 아는 척, 둘 다 함',bg:'#FDE047',fg:'#412402'}
 };
 var charColors=['c1','c2','c3'];
 
@@ -509,7 +509,7 @@ async function analyzeAndShowResult(){
   var tv=s1>=2?'T':'V',cf=s2>=2?'C':'F',ar=s3>=2?'A':'R';
   var comment='미션을 완료했어! 앞으로 AI랑 더 많이 대화해봐.';
   if(!isEmpty1&&!isEmpty2&&!isEmpty3&&((s1===1)||(s2===1)||(s3===1))){
-    var prompt='다음은 10대 학생의 AI 활용 체크업 응답이야.\n미션1: "'+(r1||'무응답')+'"\n미션2: "'+(r2||'무응답')+'"\n미션3: "'+(r3||'무응답')+'"\n1차 판별: TV='+tv+', CF='+cf+', AR='+ar+'\n애매한 축만 재판별. 반드시 JSON만 출력:\n{"tv":"T또는V","cf":"C또는F","ar":"A또는R","comment":"학생에게 친근하고 활기찬 피드백 2문장"}';
+    var prompt='다음은 10대 학생의 AI 활용 체크업 응답이야.\n미션1: "'+(r1||'무응답')+'"\n미션2: "'+(r2||'무응답')+'"\n미션3: "'+(r3||'무응답')+'"\n1차 판별: TV='+tv+', CF='+cf+', AR='+ar+'\n애매한 축만 재판별. 반드시 JSON만 출력:\n{"tv":"T또는V","cf":"C또는F","ar":"A또는R","comment":"학생 응답에서 느껴지는 성향을 캐릭터처럼 재미있게 묘사하는 2문장 (부족한 점 지적이나 성장 조언 없이, 지금 모습 자체를 긍정적으로 표현)"}';
     try{var raw=await callAPI('',prompt);var p=JSON.parse(raw.replace(/```json|```/g,'').trim());if(['T','V'].includes(p.tv))tv=p.tv;if(['C','F'].includes(p.cf))cf=p.cf;if(['A','R'].includes(p.ar))ar=p.ar;if(p.comment)comment=p.comment;}catch(e){}
   }
   var typeCode=tv+cf+ar;if(!TYPES[typeCode])typeCode='VFR';
@@ -569,8 +569,8 @@ async function analyzeAndShowResult(){
   document.getElementById('result-desc').textContent=typeInfo.desc;
   document.getElementById('axis-tv').textContent=tv;document.getElementById('axis-cf').textContent=cf;document.getElementById('axis-ar').textContent=ar;
   document.getElementById('axis-tv-name').textContent={T:'텍스트형',V:'비주얼형'}[tv];
-  document.getElementById('axis-cf-name').textContent={C:'맥락형',F:'단편형'}[cf];
-  document.getElementById('axis-ar-name').textContent={A:'주도형',R:'수용형'}[ar];
+  document.getElementById('axis-cf-name').textContent={C:'맥락형',F:'포인트형'}[cf];
+  document.getElementById('axis-ar-name').textContent={A:'주도형',R:'신중형'}[ar];
   document.getElementById('ai-comment').textContent=comment;
 
   var cardEl=document.getElementById('share-card');

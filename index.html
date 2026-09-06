@@ -692,7 +692,7 @@ function restart(){
   CATEGORY_KEYS.concat(['etc']).forEach(function(k){document.getElementById('cat-'+k).classList.remove('selected');});
   document.getElementById('growth-msg').style.display='none';document.getElementById('growth-msg').textContent='';
   var msgs=['안녕! 방금 읽은 글, 네 말로 설명해줄래? 😊','속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔','위 답변이 마음에 안 들면 나한테 다시 요청해봐. 더 좋은 답을 줄 수 있어! 💬'];
-  [1,2,3].forEach(function(n){document.getElementById('chat'+n).innerHTML='<div class="msg ai">'+msgs[n-1]+'</div>';document.getElementById('next'+n).disabled=true;});
+  [1,2,3].forEach(function(n){document.getElementById('chat'+n).innerHTML='<div class="msg ai"'+(n===2?' id="m2-hint-msg"':'')+'>'+msgs[n-1]+'</div>';document.getElementById('next'+n).disabled=true;});
   document.getElementById('btn-M').classList.remove('selected');document.getElementById('btn-H').classList.remove('selected');
   document.getElementById('start-btn').disabled=true;document.getElementById('copy-feedback').textContent='';
   showScreen('start');

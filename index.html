@@ -26,6 +26,11 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
 .grade-btn .gi{font-size:30px;margin-bottom:8px;}
 .grade-btn .gl{font-size:17px;font-weight:900;color:#1a1a2e;}
 .grade-btn .gd{font-size:12px;color:#888;margin-top:3px;font-weight:600;}
+.cat-select{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0.8rem 0 1.2rem;}
+.cat-btn{background:#fff;border:2px solid #e8e0ff;border-radius:12px;padding:10px 4px;cursor:pointer;text-align:center;font-size:11px;line-height:1.3;font-weight:800;font-family:'Nunito',sans-serif;color:#1a1a2e;transition:all 0.2s;}
+.cat-btn:hover{border-color:var(--c2);}
+.cat-btn.selected{border:2.5px solid var(--c2);background:rgba(168,85,247,0.08);color:var(--c2);}
+.growth-msg{margin:0 0 1rem;padding:12px 14px;border-radius:14px;background:rgba(255,193,7,0.12);border:1.5px solid rgba(255,193,7,0.35);font-size:13px;font-weight:800;color:#8a6400;text-align:center;line-height:1.5;}
 .start-btn{width:100%;padding:16px;border-radius:16px;background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;border:none;font-size:16px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(168,85,247,0.3);}
 .start-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(168,85,247,0.4);}
 .start-btn:disabled{opacity:0.3;cursor:not-allowed;background:#ccc;box-shadow:none;}
@@ -181,6 +186,23 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <button class="grade-btn" onclick="selectYear(3)" id="btn-Y3"><div class="gl">3학년</div></button>
   </div>
 
+  <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:8px;letter-spacing:0.5px;">🎯 관심사 선택 (1개만)</div>
+  <div class="cat-select">
+    <button class="cat-btn" onclick="selectCategory('study')" id="cat-study">📚 학업·학습</button>
+    <button class="cat-btn" onclick="selectCategory('career')" id="cat-career">🧭 진로</button>
+    <button class="cat-btn" onclick="selectCategory('media')" id="cat-media">📱 미디어·디지털</button>
+    <button class="cat-btn" onclick="selectCategory('game')" id="cat-game">🎮 게임·e스포츠</button>
+    <button class="cat-btn" onclick="selectCategory('culture')" id="cat-culture">🎤 문화·예술</button>
+    <button class="cat-btn" onclick="selectCategory('sports')" id="cat-sports">⚽ 스포츠·신체활동</button>
+    <button class="cat-btn" onclick="selectCategory('hobby')" id="cat-hobby">🛠️ 취미·창작·메이커</button>
+    <button class="cat-btn" onclick="selectCategory('relation')" id="cat-relation">💛 관계·정서</button>
+    <button class="cat-btn" onclick="selectCategory('fashion')" id="cat-fashion">👗 패션·뷰티</button>
+    <button class="cat-btn" onclick="selectCategory('tech')" id="cat-tech">🔬 과학·기술</button>
+    <button class="cat-btn" onclick="selectCategory('society')" id="cat-society">🌍 사회·환경·시민참여</button>
+    <button class="cat-btn" onclick="selectCategory('travel')" id="cat-travel">✈️ 여행·여가</button>
+    <button class="cat-btn" onclick="selectCategory('etc')" id="cat-etc">🎲 기타</button>
+  </div>
+
   <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:1.2rem;">
     <div>
       <div style="font-size:12px;font-weight:800;color:var(--c2);margin-bottom:6px;letter-spacing:0.5px;">🏫 학교명</div>
@@ -205,7 +227,7 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="mc">
       <div class="mn">📖 미션 1 · 텍스트 읽기</div>
       <div class="mt">다음 글을 읽고 AI에게 설명해봐</div>
-      <div class="passage">스마트폰이 생기면서 사람들은 더 편리해졌지만, 동시에 집중력이 떨어지고 깊이 생각하는 시간이 줄었다는 연구결과가 있다. 기술은 우리 삶을 바꾸지만, 그 변화가 항상 좋은 방향은 아닐 수 있다.</div>
+      <div class="passage" id="m1-passage">스마트폰이 생기면서 사람들은 더 편리해졌지만, 동시에 집중력이 떨어지고 깊이 생각하는 시간이 줄었다는 연구결과가 있다. 기술은 우리 삶을 바꾸지만, 그 변화가 항상 좋은 방향은 아닐 수 있다.</div>
       <div class="inst"><strong>잘 쓰려고 하지 말고</strong>, 친구한테 말하듯이 AI한테 설명해봐!</div>
       <div class="chat-box">
         <div class="chat-msgs" id="chat1"><div class="msg ai">안녕! 방금 읽은 글, 네 말로 설명해줄래? 😊</div></div>
@@ -228,7 +250,7 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
       </div>
       <div class="inst">각 속담의 뜻을 설명하고, <strong>요즘 네 주변 상황이랑 연결해서</strong> 얘기해봐!</div>
       <div class="chat-box">
-        <div class="chat-msgs" id="chat2"><div class="msg ai">속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔</div></div>
+        <div class="chat-msgs" id="chat2"><div class="msg ai" id="m2-hint-msg">속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔</div></div>
         <div class="chat-in-row"><textarea class="chat-input" id="input2" rows="2" placeholder="여기에 입력해봐..."></textarea><button class="send-btn" id="send2" onclick="sendMessage(2)">전송 ➤</button></div>
       </div>
     </div>
@@ -242,7 +264,7 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="mc">
       <div class="mn">⚡ 미션 3 · AI 다루기</div>
       <div class="mt">AI 답변이 마음에 안 들어. 더 좋은 답을 받아내봐!</div>
-      <div class="passage">AI가 이렇게 대답했어:<br><br><span style="font-weight:800;color:#333;">"쇼츠는 짧고 재미있지만 너무 많이 보면 집중력이 떨어질 수 있으므로 시청 시간을 줄이는 것이 좋습니다."</span></div>
+      <div class="passage" id="m3-passage">AI가 이렇게 대답했어:<br><br><span style="font-weight:800;color:#333;" id="m3-aianswer">"쇼츠는 짧고 재미있지만 너무 많이 보면 집중력이 떨어질 수 있으므로 시청 시간을 줄이는 것이 좋습니다."</span></div>
       <div class="inst">뭔가 <strong>부족하거나 마음에 안 드는 것 같지?</strong> AI한테 더 좋은 답을 받아내봐!</div>
       <div class="chat-box">
         <div class="chat-msgs" id="chat3"><div class="msg ai">위 답변이 마음에 안 들면 나한테 다시 요청해봐. 더 좋은 답을 줄 수 있어! 💬</div></div>
@@ -279,6 +301,8 @@ body{font-family:'Nunito',sans-serif;background:#f8f7ff;color:#1a1a2e;min-height
     <div class="comment-label">💡 AI 분석 코멘트</div>
     <div class="comment-text" id="ai-comment"></div>
   </div>
+
+  <div class="growth-msg" id="growth-msg" style="display:none;"></div>
 
   <div class="share-card" id="share-card">
     <div class="share-card-img-wrap"><img id="share-card-img" src="" alt=""></div>
@@ -357,6 +381,27 @@ var TYPES={
 };
 var charColors=['c1','c2','c3'];
 
+// 관심사별 문항 은행 — 문항은행_재방문로직_설계.md 기준
+// tvKeywords/cfKeywords: 채점 알고리즘 구조(scoreTV/scoreCF)는 카테고리 불문 고정,
+// 소재 어휘만 카테고리별로 다르게 매칭 (채점 "기준" 자체는 바뀌지 않음)
+var CATEGORIES={
+  study:{passage:'요즘 학생들은 인터넷 강의나 요약 노트로 빠르게 공부하지만, 스스로 정리하고 설명해보는 과정이 줄면서 오래 기억에 남지 않는다는 연구결과가 있다. 빠르게 배우는 것과 깊이 이해하는 것은 항상 같이 가지는 않는다.',aiAnswer:'"시험 공부는 미리미리 계획을 세워서 꾸준히 하는 것이 좋습니다."',topicWord:'공부',hint:'요즘 공부하다가 있었던 일이랑 연결해서',tvKeywords:/공부|암기|이해|기억|학습|정리|설명/,cfKeywords:/시험|숙제|수행평가|학원|공부|성적|인강|과제/},
+  career:{passage:'요즘은 진로 정보를 유튜브나 AI한테 빠르게 물어볼 수 있지만, 정작 "내가 뭘 좋아하는지"는 검색으로 바로 나오지 않는다는 이야기가 있다. 정보가 많아진다고 답이 저절로 정해지는 건 아니다.',aiAnswer:'"진로를 정할 때는 자신의 적성과 흥미를 잘 파악하는 것이 중요합니다."',topicWord:'진로',hint:'요즘 진로 생각하면서 있었던 일이랑 연결해서',tvKeywords:/진로|적성|흥미|정보|검색|정하/,cfKeywords:/진로|전공|직업|꿈|적성|미래|고민/},
+  media:{passage:'스마트폰이 생기면서 사람들은 더 편리해졌지만, 동시에 집중력이 떨어지고 깊이 생각하는 시간이 줄었다는 연구결과가 있다. 기술은 우리 삶을 바꾸지만, 그 변화가 항상 좋은 방향은 아닐 수 있다.',aiAnswer:'"쇼츠는 짧고 재미있지만 너무 많이 보면 집중력이 떨어질 수 있으므로 시청 시간을 줄이는 것이 좋습니다."',topicWord:'쇼츠',hint:'요즘 유튜브·숏폼 보면서 있었던 일이랑 연결해서',tvKeywords:/편리|집중|기술|스마트폰|영상/,cfKeywords:/유튜브|숏폼|인스타|틱톡|쇼츠|알고리즘|구독/},
+  game:{passage:'게임을 하면 순간적인 판단력이나 협동심이 늘어난다는 연구가 있지만, 동시에 너무 오래 하면 다른 일에 집중하는 힘이 줄어든다는 이야기도 있다. 재미와 몰입이 항상 좋은 결과로만 이어지는 건 아니다.',aiAnswer:'"게임을 오래 하면 눈이 피로해질 수 있으니 적당히 쉬어가며 하는 것이 좋습니다."',topicWord:'게임',hint:'요즘 게임하다가 있었던 일이랑 연결해서',tvKeywords:/게임|판단력|협동심|몰입|집중/,cfKeywords:/게임|롤|배그|피시방|랭크|클랜|스쿼드/},
+  culture:{passage:'좋아하는 아이돌이나 아티스트의 영상을 반복해서 보면 위로가 되고 힘이 난다는 사람들이 많지만, 그 시간이 너무 길어지면 정작 내 일상은 소홀해질 수 있다는 이야기도 있다.',aiAnswer:'"좋아하는 가수의 콘텐츠는 적당히 즐기면서 다른 활동과 균형을 맞추는 것이 좋습니다."',topicWord:'아이돌 콘텐츠',hint:'요즘 좋아하는 음악·아이돌·팬덤 활동이랑 연결해서',tvKeywords:/아이돌|음악|팬덤|위로|일상/,cfKeywords:/아이돌|콘서트|팬덤|덕질|앨범|무대|최애/},
+  sports:{passage:'운동을 하면 스트레스가 풀리고 건강해진다는 건 잘 알려져 있지만, 성적이나 순위에 너무 집착하면 오히려 운동 자체가 부담스러워질 수 있다는 이야기도 있다.',aiAnswer:'"운동은 꾸준히 하는 것이 중요하니 매일 규칙적으로 하는 것이 좋습니다."',topicWord:'운동',hint:'요즘 운동하거나 경기 보면서 있었던 일이랑 연결해서',tvKeywords:/운동|스트레스|건강|순위|경쟁/,cfKeywords:/운동|경기|팀|훈련|대회|체육|헬스/},
+  hobby:{passage:'손으로 뭔가를 직접 만들어보면 성취감이 크다는 사람들이 많지만, 완성도에 너무 집착하면 시작하기도 전에 부담을 느껴 포기하게 되는 경우도 있다는 이야기가 있다.',aiAnswer:'"새로운 취미를 시작할 때는 필요한 준비물을 미리 잘 챙기는 것이 좋습니다."',topicWord:'취미 활동',hint:'요즘 만들거나 키우거나 하는 취미 활동이랑 연결해서',tvKeywords:/만들|성취감|완성도|포기|시작/,cfKeywords:/취미|공예|피규어|드론|로봇|반려식물|요리/},
+  relation:{passage:'힘든 일이 있을 때 친구나 가족에게 털어놓으면 마음이 편해진다는 연구결과가 있지만, 반대로 혼자 삭이는 게 더 편한 사람도 있다는 이야기가 있다. 마음을 다스리는 방법이 모두에게 똑같지는 않다.',aiAnswer:'"친구와 갈등이 생겼을 때는 대화를 통해 오해를 푸는 것이 좋습니다."',topicWord:'친구·가족 관계',hint:'요즘 친구나 가족 관계에서 있었던 일이랑 연결해서',tvKeywords:/친구|가족|마음|힘든|털어놓/,cfKeywords:/친구|가족|연애|갈등|고민|관계|다툼/},
+  fashion:{passage:'SNS에서 유행하는 스타일을 따라 하면 자신감이 생긴다는 사람들이 많지만, 남과 비교하는 마음이 커지면 오히려 스트레스가 될 수 있다는 이야기도 있다.',aiAnswer:'"유행하는 스타일을 따라 할 때는 자신에게 잘 어울리는지 먼저 확인하는 것이 좋습니다."',topicWord:'패션·뷰티',hint:'요즘 패션이나 뷰티 관련해서 있었던 일이랑 연결해서',tvKeywords:/스타일|유행|자신감|비교|스트레스/,cfKeywords:/패션|화장|메이크업|헤어|옷|스타일|꾸미/},
+  tech:{passage:'AI나 코딩을 배우면 문제를 새로운 방식으로 풀 수 있다는 기대가 크지만, 원리를 모른 채 결과만 따라 쓰면 정작 실력은 늘지 않는다는 이야기도 있다.',aiAnswer:'"코딩을 배울 때는 기초 문법부터 차근차근 익히는 것이 좋습니다."',topicWord:'코딩·AI',hint:'요즘 코딩·AI·과학 관련해서 있었던 일이랑 연결해서',tvKeywords:/코딩|AI|원리|실력|기대/,cfKeywords:/코딩|앱|로봇|우주|천문|프로그래밍|알고리즘/},
+  society:{passage:'기후위기나 사회 문제에 관심을 갖는 10대가 늘고 있다는 이야기가 있지만, 막상 무엇부터 해야 할지 몰라 관심이 행동으로 이어지지 않는 경우도 많다는 연구결과가 있다.',aiAnswer:'"환경을 위해서는 일상에서 분리수거를 잘 실천하는 것이 좋습니다."',topicWord:'사회·환경 문제',hint:'요즘 사회 문제나 환경에 관심 갖게 된 일이랑 연결해서',tvKeywords:/기후|환경|사회|관심|행동/,cfKeywords:/환경|기후|인권|봉사|지역|캠페인|시위/},
+  travel:{passage:'새로운 곳을 여행하면 시야가 넓어진다는 이야기가 많지만, SNS에 올릴 사진을 찍는 데만 집중하다 보면 정작 그 장소를 제대로 느끼지 못하고 지나칠 수 있다는 이야기도 있다.',aiAnswer:'"여행을 갈 때는 미리 일정을 잘 계획하는 것이 좋습니다."',topicWord:'여행',hint:'요즘 놀러 가거나 여행했던 일이랑 연결해서',tvKeywords:/여행|시야|사진|장소|경험/,cfKeywords:/여행|캠핑|맛집|여행지|사진|명소|숙소/}
+};
+var CATEGORY_KEYS=Object.keys(CATEGORIES);
+var selectedCategory='';   // 사용자가 고른 값 ('etc' 포함)
+var activeCategory='';     // 실제 문항에 쓰인 값 ('etc'면 무작위 배정된 실제 카테고리)
+
 // API 호출 — Vercel 프록시 사용 (API 키 노출 없음)
 async function callAPI(system, userText){
   var res=await fetch('/api/chat',{
@@ -384,14 +429,23 @@ function switchTab(t){
 }
 function selectGrade(g){grade=g;document.getElementById('btn-M').classList.toggle('selected',g==='M');document.getElementById('btn-H').classList.toggle('selected',g==='H');checkStartBtn();}
 function selectYear(y){schoolInfo.year=y;[1,2,3].forEach(function(n){document.getElementById('btn-Y'+n).classList.toggle('selected',n===y);});checkStartBtn();}
+function selectCategory(id){selectedCategory=id;CATEGORY_KEYS.concat(['etc']).forEach(function(k){document.getElementById('cat-'+k).classList.toggle('selected',k===id);});checkStartBtn();}
 function checkStartBtn(){
   var school=document.getElementById('school-input').value.trim();
   var cls=document.getElementById('class-input').value.trim();
   schoolInfo.school=school;schoolInfo.classNum=cls;
-  document.getElementById('start-btn').disabled=!(grade&&schoolInfo.year&&school&&cls);
+  document.getElementById('start-btn').disabled=!(grade&&schoolInfo.year&&school&&cls&&selectedCategory);
+}
+function applyCategoryContent(){
+  // '기타' 선택 시 나머지 12개 중 무작위 배정 (문항은행_재방문로직_설계.md 3번 "13. 기타" 원칙)
+  activeCategory=(selectedCategory==='etc')?CATEGORY_KEYS[Math.floor(Math.random()*CATEGORY_KEYS.length)]:selectedCategory;
+  var c=CATEGORIES[activeCategory];
+  document.getElementById('m1-passage').textContent=c.passage;
+  document.getElementById('m2-hint-msg').textContent='속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? '+c.hint+' 설명해줘! 🤔';
+  document.getElementById('m3-aianswer').textContent=c.aiAnswer;
 }
 function showScreen(id){document.querySelectorAll('#tab-student-content .screen').forEach(function(s){s.classList.remove('active');});document.getElementById('screen-'+id).classList.add('active');}
-function startMission(){showScreen('m1');}
+function startMission(){applyCategoryContent();showScreen('m1');}
 function goToMission(n){showScreen('m'+n);}
 
 async function sendMessage(mNum){
@@ -425,14 +479,25 @@ async function sendMessage(mNum){
   chatEl.appendChild(thinking);chatEl.scrollTop=chatEl.scrollHeight;
   var nextLabel=mNum===3?"'결과 보기'":"'다음 미션으로'";
   var guide='답장 끝에 반드시 이 문장을 추가해: "잘했어! 계속해도 되고, 아래 '+nextLabel+' 버튼을 눌러봐 👇"';
-  var sys={1:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 글을 자기 말로 설명하면 1-2문장으로 공감하고 격려해줘. '+guide,2:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 속담을 설명하면 1-2문장으로 반응하고 칭찬해줘. '+guide,3:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 쇼츠 관련 더 구체적인 답을 요청하면 2-3문장으로 더 나은 답을 줘. '+guide};
+  var topicWord=(CATEGORIES[activeCategory]&&CATEGORIES[activeCategory].topicWord)||'쇼츠';
+  var sys={1:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 글을 자기 말로 설명하면 1-2문장으로 공감하고 격려해줘. '+guide,2:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 속담을 설명하면 1-2문장으로 반응하고 칭찬해줘. '+guide,3:'너는 10대 학생과 대화하는 친근하고 활기찬 AI야. 학생이 '+topicWord+' 관련 더 구체적인 답을 요청하면 2-3문장으로 더 나은 답을 줘. '+guide};
   try{var reply=await callAPI(sys[mNum],text);if(!reply)throw new Error('empty');thinking.className='msg ai';thinking.textContent=reply;}
   catch(e){thinking.className='msg ai';thinking.textContent='잘했어! 계속해도 되고, 아래 '+nextLabel+' 버튼을 눌러봐 👇';}
   chatEl.scrollTop=chatEl.scrollHeight;sendBtn.disabled=false;document.getElementById('next'+mNum).disabled=false;
 }
 
-function scoreTV(t){if(!t||t.trim().length<5)return 0;var s=0;if(t.trim().split(/\s+/).length>=10)s++;if(t.indexOf('스마트폰이 생기면서 사람들은 더 편리해졌지만')===-1)s++;if(/편리|집중|기술|변화|연구|생각|영향|좋|나쁨|문제|단점|장점/.test(t))s++;return s;}
-function scoreCF(t){if(!t||t.trim().length<5)return 0;var s=0;if(/카톡|sns|댓글|인스타|유튜브|단톡|온라인|인터넷|게임|쇼츠|트위터|틱톡/.test(t))s++;if(t.trim().split(/\s+/).length>=12)s++;if(/예를 들|요즘|우리|학교|친구|상황|때문|그래서|경우|실제/.test(t))s++;return s;}
+// 채점 "기준"(구조: 길이/원문복붙여부/주제어반응/맥락연결) 은 카테고리 불문 고정.
+// 카테고리별로 바뀌는 건 원문(passage)과 tvKeywords/cfKeywords 소재 어휘뿐.
+function scoreTV(t,catId){if(!t||t.trim().length<5)return 0;var s=0;var cat=CATEGORIES[catId]||CATEGORIES.media;
+  if(t.trim().split(/\s+/).length>=10)s++;
+  if(t.indexOf(cat.passage.slice(0,20))===-1)s++;
+  if(/변화|연구|생각|영향|좋|나쁨|문제|단점|장점/.test(t)||cat.tvKeywords.test(t))s++;
+  return s;}
+function scoreCF(t,catId){if(!t||t.trim().length<5)return 0;var s=0;var cat=CATEGORIES[catId]||CATEGORIES.media;
+  if(cat.cfKeywords.test(t))s++;
+  if(t.trim().split(/\s+/).length>=12)s++;
+  if(/예를 들|요즘|우리|학교|친구|상황|때문|그래서|경우|실제/.test(t))s++;
+  return s;}
 function scoreAR(arr){var s=0;if(arr.length>=2)s++;var all=arr.join(' ');if(/구체적|예를 들|왜|어떻게|다른|더|말고|대신|몇|좋은 점|나쁜 점|알려줘|설명해|방법/.test(all))s++;if(all.trim().split(/\s+/).length>=8)s++;return s;}
 
 async function analyzeAndShowResult(){
@@ -440,7 +505,7 @@ async function analyzeAndShowResult(){
   var r1=responses.m1.join(' '),r2=responses.m2.join(' '),r3=responses.m3.join(' ');
   var isEmpty1=emptyFlags.m1,isEmpty2=emptyFlags.m2,isEmpty3=emptyFlags.m3;
   // 무응답이면 자동으로 V/F/R
-  var s1=isEmpty1?0:scoreTV(r1),s2=isEmpty2?0:scoreCF(r2),s3=isEmpty3?0:scoreAR(responses.m3);
+  var s1=isEmpty1?0:scoreTV(r1,activeCategory),s2=isEmpty2?0:scoreCF(r2,activeCategory),s3=isEmpty3?0:scoreAR(responses.m3);
   var tv=s1>=2?'T':'V',cf=s2>=2?'C':'F',ar=s3>=2?'A':'R';
   var comment='미션을 완료했어! 앞으로 AI랑 더 많이 대화해봐.';
   if(!isEmpty1&&!isEmpty2&&!isEmpty3&&((s1===1)||(s2===1)||(s3===1))){
@@ -450,6 +515,31 @@ async function analyzeAndShowResult(){
   var typeCode=tv+cf+ar;if(!TYPES[typeCode])typeCode='VFR';
   var typeInfo=TYPES[typeCode];var prefix=grade==='M'?'M':'H';var fullCode=prefix+'-'+typeCode;
   resultSnap={fullCode:fullCode,name:typeInfo.name,desc:typeInfo.desc};
+
+  // 재방문 성장 로직 (개인식별 정보 없이 브라우저 저장소만 사용, 문항은행_재방문로직_설계.md 4번)
+  var revisit={isRevisit:false,changed:false,visitCount:1,prevTypeCode:''};
+  try{
+    var prevRaw=localStorage.getItem('aiCheckupRevisit');
+    var prev=prevRaw?JSON.parse(prevRaw):null;
+    if(prev&&prev.lastTypeCode){
+      revisit.isRevisit=true;
+      revisit.prevTypeCode=prev.lastTypeCode;
+      revisit.changed=(prev.lastTypeCode!==typeCode);
+      revisit.visitCount=(prev.visitCount||1)+1;
+    }
+    localStorage.setItem('aiCheckupRevisit',JSON.stringify({lastTypeCode:typeCode,visitCount:revisit.visitCount,lastVisitDate:new Date().toISOString().slice(0,10)}));
+  }catch(e){}
+
+  var growthEl=document.getElementById('growth-msg');
+  if(!revisit.isRevisit){growthEl.style.display='none';growthEl.textContent='';}
+  else{
+    var prevName=(TYPES[revisit.prevTypeCode]&&TYPES[revisit.prevTypeCode].name)||revisit.prevTypeCode;
+    var msg=revisit.changed
+      ?'어? 지난번엔 '+prevName+'이었는데 이번엔 '+typeInfo.name+'이 됐어! 그새 좀 달라졌나 봐 ✨'
+      :'지난번에도 '+prevName+'이었는데, 이번에도 그대로네! 넌 진짜 찐 '+prevName+'인가 봐 😎';
+    if(revisit.visitCount>=3)msg+=' 벌써 '+revisit.visitCount+'번째 도전이네, 완전 단골이잖아 👏';
+    growthEl.textContent=msg;growthEl.style.display='block';
+  }
 
   // Upstash에 저장 (무응답 플래그 포함)
   try{
@@ -463,7 +553,9 @@ async function analyzeAndShowResult(){
         classNum:schoolInfo.classNum,
         fullCode:fullCode,typeName:typeInfo.name,
         r1:r1||'',r2:r2||'',r3:r3||'',
-        isEmpty1:isEmpty1,isEmpty2:isEmpty2,isEmpty3:isEmpty3
+        isEmpty1:isEmpty1,isEmpty2:isEmpty2,isEmpty3:isEmpty3,
+        category:activeCategory,
+        isRevisit:revisit.isRevisit,typeChanged:revisit.changed,visitCount:revisit.visitCount
       })
     });
   }catch(e){console.error('Save failed',e);}
@@ -593,9 +685,12 @@ function restart(){
   grade='';responses={m1:[],m2:[],m3:[]};resultSnap={};
   emptyFlags={m1:true,m2:true,m3:true};
   schoolInfo={school:'',year:0,classNum:''};
+  selectedCategory='';activeCategory='';
   document.getElementById('school-input').value='';
   document.getElementById('class-input').value='';
   [1,2,3].forEach(function(n){document.getElementById('btn-Y'+n).classList.remove('selected');});
+  CATEGORY_KEYS.concat(['etc']).forEach(function(k){document.getElementById('cat-'+k).classList.remove('selected');});
+  document.getElementById('growth-msg').style.display='none';document.getElementById('growth-msg').textContent='';
   var msgs=['안녕! 방금 읽은 글, 네 말로 설명해줄래? 😊','속담 1이랑 속담 2, 각각 무슨 뜻인지 알아? 요즘 상황이랑 연결해서 설명해줘! 🤔','위 답변이 마음에 안 들면 나한테 다시 요청해봐. 더 좋은 답을 줄 수 있어! 💬'];
   [1,2,3].forEach(function(n){document.getElementById('chat'+n).innerHTML='<div class="msg ai">'+msgs[n-1]+'</div>';document.getElementById('next'+n).disabled=true;});
   document.getElementById('btn-M').classList.remove('selected');document.getElementById('btn-H').classList.remove('selected');
